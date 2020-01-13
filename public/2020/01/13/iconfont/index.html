@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="iconfont,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="iconfont 库实现0. 背景新技术栈引入了 Ant Design，其 内置的字体并不满足业务开发需求，需要实现一套相对通用的逻辑封装，实现由设计师上传设计资源生成相应的图标预览。">
+<meta name="keywords" content="iconfont">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iconfont 库实现">
+<meta property="og:url" content="http://ipili.me/2020/01/13/iconfont/index.html">
+<meta property="og:site_name" content="爱霹雳">
+<meta property="og:description" content="iconfont 库实现0. 背景新技术栈引入了 Ant Design，其 内置的字体并不满足业务开发需求，需要实现一套相对通用的逻辑封装，实现由设计师上传设计资源生成相应的图标预览。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-01-13T10:36:08.107Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iconfont 库实现">
+<meta name="twitter:description" content="iconfont 库实现0. 背景新技术栈引入了 Ant Design，其 内置的字体并不满足业务开发需求，需要实现一套相对通用的逻辑封装，实现由设计师上传设计资源生成相应的图标预览。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://ipili.me/2020/01/13/iconfont/">
+
+
+
+
+
+  <title>iconfont 库实现 | 爱霹雳</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">爱霹雳</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">爱生活，爱霹雳，爱Node</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://ipili.me/2020/01/13/iconfont/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="小四">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/Vindicare_Temple_Icon.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="爱霹雳">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">iconfont 库实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-13T18:36:08+08:00">
+                2020-01-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iconfont/" itemprop="url" rel="index">
+                    <span itemprop="name">iconfont</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="iconfont-库实现"><a href="#iconfont-库实现" class="headerlink" title="iconfont 库实现"></a>iconfont 库实现</h1><h2 id="0-背景"><a href="#0-背景" class="headerlink" title="0. 背景"></a>0. 背景</h2><p>新技术栈引入了 Ant Design，其 内置的字体并不满足业务开发需求，需要实现一套相对通用的逻辑封装，实现由设计师上传设计资源生成相应的图标预览。</p>
+<a id="more"></a>
+<h2 id="1-设计目标"><a href="#1-设计目标" class="headerlink" title="1. 设计目标"></a>1. 设计目标</h2><ol>
+<li>一套系统中只存在一种字体文件</li>
+<li>iconfont 库以 gitlab 私有 npm 包引入项目，辅助一些构建脚本</li>
+<li>使用时与 antd 默认 Icon 机制无差别，即 <icon type="{*}"></icon></li>
+</ol>
+<h2 id="2-实现过程"><a href="#2-实现过程" class="headerlink" title="2. 实现过程"></a>2. 实现过程</h2><h3 id="2-1-初期构想"><a href="#2-1-初期构想" class="headerlink" title="2.1 初期构想"></a>2.1 初期构想</h3><pre><code>1. 最开始构想为自定义字体与 antd 默认字体同时存在，两套系统type名称以前缀进行区别 (违背了设计 1.1 需求)
+2. 字体文件覆盖，antd官方支持可配置字体路径，本地通过脚本生成相应的字体文件，导入对应的路径。
+</code></pre><blockquote>
+<p>最终选择使用 <a href="https://www.npmjs.com/package/icon-font-generator" target="_blank" rel="noopener">icon-font-generator</a> 库，通过脚本配置直接生成对应的概览</p>
+</blockquote>
+<h3 id="2-2-中期实现困难"><a href="#2-2-中期实现困难" class="headerlink" title="2.2 中期实现困难"></a>2.2 中期实现困难</h3><h4 id="2-2-1-基本库的选择"><a href="#2-2-1-基本库的选择" class="headerlink" title="2.2.1 基本库的选择"></a>2.2.1 基本库的选择</h4><p>尽可能选择更新较为频繁或者比较成熟的库来实现，最终选择 <a href="https://github.com/Workshape/icon-font-generator#readme" target="_blank" rel="noopener">icon-font-generator</a> 。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">icon-font-generator assets/svg/*.svg -n iconfont --height=1000 -p anticon -o icon-dist --center</span><br></pre></td></tr></table></figure>
+<p><code>注:</code> <code>--height=1000</code> 是为了提高图形质量。</p>
+<h4 id="2-2-2-资源打包"><a href="#2-2-2-资源打包" class="headerlink" title="2.2.2 资源打包"></a>2.2.2 资源打包</h4><p>由于在项目中使用了 css-module，生成的字体 css 文件不能直接 import 进项目中应用，所以只能放在 public 文件夹下面，这样打包时不会处理对应的文件资源。</p>
+<h4 id="2-2-3-antd-icon-显示的坑"><a href="#2-2-3-antd-icon-显示的坑" class="headerlink" title="2.2.3 antd icon 显示的坑"></a>2.2.3 antd icon 显示的坑</h4><p>在 antd 框架内，有两种展示icon的方式</p>
+<ul>
+<li>带有 anticon 以及 anticon-* 的标签</li>
+<li>内置部分类名，定义该类伪类 content 为对应icon的编码</li>
+</ul>
+<p>对于第二种情况，需要手动定义该内置类名与新字体库中应显示图标的映射。</p>
+<blockquote>
+<p>解决方案：基于 <code>2.2.1</code> 中生成的 json 文件，将字体名的编码映射到对应的伪类中。辅助库：<a href="https://github.com/zswang/jdists" target="_blank" rel="noopener">jdists</a></p>
+</blockquote>
+<h4 id="2-2-4-字体资源文件维护"><a href="#2-2-4-字体资源文件维护" class="headerlink" title="2.2.4 字体资源文件维护"></a>2.2.4 字体资源文件维护</h4><p>多个项目使用时，避免文件传来传去，以及实现由设计同学来输入原始的svg资源，最终自动生成字体图标的预览。</p>
+<blockquote>
+<p>解决方案：将字体库抽离具体项目，代之以私有npm包的形式作为项目依赖。</p>
+</blockquote>
+<h4 id="2-2-5-antd-版本升级，图标机制修改"><a href="#2-2-5-antd-版本升级，图标机制修改" class="headerlink" title="2.2.5 antd 版本升级，图标机制修改"></a>2.2.5 antd 版本升级，图标机制修改</h4><p>antd 在 <code>3.9.0</code> 版本开始，将<code>fontface</code>替换为<code>svg</code>，导致升级后图标位置出现两个方框。</p>
+<blockquote>
+<p>解决方案：将现有的antd版本锁定在3.8.x。</p>
+</blockquote>
+<h4 id="2-2-6-svg资源规范"><a href="#2-2-6-svg资源规范" class="headerlink" title="2.2.6 svg资源规范"></a>2.2.6 svg资源规范</h4><p>在完成以上步骤，引入项目中后，会发现字体很难与文字对齐</p>
+<blockquote>
+<p>解决方案：将svg资源设置为 <code>32x32</code> 的尺寸，以及默认将字体内容填充至填满整个区域。</p>
+</blockquote>
+<h3 id="3-总结与探索"><a href="#3-总结与探索" class="headerlink" title="3. 总结与探索"></a>3. 总结与探索</h3><p>常见的字体机制</p>
+<ol>
+<li>unicode<ol>
+<li>兼容性最好，支持ie6+，及所有现代浏览器。</li>
+<li>支持按字体的方式去动态调整图标大小，颜色等等。</li>
+<li>不支持多色</li>
+</ol>
+</li>
+<li>font-class<ol>
+<li>兼容性良好，支持ie8+，及所有现代浏览器。</li>
+<li>书写更直观</li>
+<li>也不支持多色</li>
+</ol>
+</li>
+<li>symbol<ol>
+<li><code>支持多色！！！！</code></li>
+<li>支持 ie9+,及现代浏览器。（符合要求）</li>
+</ol>
+</li>
+</ol>
+<p>接下来可以改进的地方</p>
+<ol>
+<li>现有的gitlab机制，新增svg时仍然需要手动去本地build一下字体文件再push到对应的分支，可以考虑在 ci 机器上build完成直接推送到分支</li>
+<li>与现有技术栈更匹配的字体库实现方式<br> <a href="https://www.smooth-code.com/open-source/svgr/playground/" target="_blank" rel="noopener">演示地址</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iconfont/" rel="tag"># iconfont</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/13/url参数解析/" rel="next" title="常见函数封装（2）">
+                <i class="fa fa-chevron-left"></i> 常见函数封装（2）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/Vindicare_Temple_Icon.jpg" alt="小四">
+          <p class="site-author-name" itemprop="name">小四</p>
+           
+              <p class="site-description motion-element" itemprop="description">爱生活，爱霹雳，爱 Node</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/m1911star" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="lhlxtl@gmail.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#iconfont-库实现"><span class="nav-number">1.</span> <span class="nav-text">iconfont 库实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#0-背景"><span class="nav-number">1.1.</span> <span class="nav-text">0. 背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-设计目标"><span class="nav-number">1.2.</span> <span class="nav-text">1. 设计目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-实现过程"><span class="nav-number">1.3.</span> <span class="nav-text">2. 实现过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-初期构想"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 初期构想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-中期实现困难"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 中期实现困难</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-基本库的选择"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">2.2.1 基本库的选择</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-2-资源打包"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">2.2.2 资源打包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-3-antd-icon-显示的坑"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">2.2.3 antd icon 显示的坑</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-4-字体资源文件维护"><span class="nav-number">1.3.2.4.</span> <span class="nav-text">2.2.4 字体资源文件维护</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-5-antd-版本升级，图标机制修改"><span class="nav-number">1.3.2.5.</span> <span class="nav-text">2.2.5 antd 版本升级，图标机制修改</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-6-svg资源规范"><span class="nav-number">1.3.2.6.</span> <span class="nav-text">2.2.6 svg资源规范</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-总结与探索"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 总结与探索</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小四</span>
+</div>
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
